@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>图片转文字</title>
+    <script
+      src="./js/tesseract.min.js"
+      type="text/javascript"
+      charset="utf-8"
+    ></script>
+  </head>
+  <body>
+    <div id="text"></div>
+
+    <script type="text/javascript">
+      var img = document.createElement("img"); //创建一个img元素
+      img.src = "https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fpic1.win4000.com%2Fwallpaper%2Fe%2F574804d7a8e0e.jpg&refer=http%3A%2F%2Fpic1.win4000.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=auto?sec=1666955173&t=5be4ec709cec62ce314e1ed42b07acbe";
+      const { createWorker } = Tesseract;
+      const worker = createWorker({
+        workerPath: "./js/worker.min.js", // 从上面获取到的文件
+        langPath: "./lang-data", // 语言包相对位置， 如果没有默认为英文
+        corePath: "./js/tesseract-core.wasm.js", // 从上面获取到的文件
+      });
+      (async () => {
+        await worker.load(); // 加载
+        await worker.loadLanguage("eng"); // 加载英文的语言包
+        await worker.initialize("eng"); // 加载英文的语言包
+        const {
+          data: { text },
+        } = await worker.recognize(img); //需要解析的图片
+        console.log(text);
+        document.getElementById("text").innerText = text;
+        await worker.terminate();
+      })();
+    </script>
+  </body>
+</html>
